@@ -171,6 +171,8 @@ CloudFront の設定はこのようになります。ややこしい部分を解
 
 このような Output セクションがあると、デプロイ完了後 URL をすぐに知る事ができて便利です。`DistributionId` の方は `serverless-cloudfront-invalidate` プラグインの `distributionIdKey` で必要な項目です。
 
+完成品: https://github.com/propella/sls-s3-cloudfront-sample
+
 # 参考
 
 * [Serverless Framework で SPA 環境を構築してみる（with Lambda@Edge & API Gateway） - Qiita](https://qiita.com/wind-up-bird/items/d8a43f61b9f81d79185d)
