@@ -1,0 +1,50 @@
+service: sls-s3-cloudfront-sample
+frameworkVersion: "3"
+
+plugins:
+  - serverless-s3-sync
+  - serverless-cloudfront-invalidate
+
+provider:
+  name: aws
+  region: ap-northeast-1
+
+custom:
+  s3Sync:
+    - bucketName: ${self:service}-${sls:stage}
+      localDir: out/
+      acl: public-read
+  cloudfrontInvalidate:
+    - distributionIdKey: DistributionId
+      items:
+        - "/*"
+
+resources:
+  Resources:
+    Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: PublicRead
+        BucketName: ${self:service}-${sls:stage}
+        WebsiteConfiguration:
+          IndexDocument: index.html
+    Distribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Origins:
+            - CustomOriginConfig:
+                OriginProtocolPolicy: http-only
+              DomainName: ${self:service}-${sls:stage}.s3-website-${aws:region}.amazonaws.com
+              Id: ${self:service}-${sls:stage}
+          DefaultCacheBehavior:
+            TargetOriginId: ${self:service}-${sls:stage}
+            ForwardedValues:
+              QueryString: false
+            ViewerProtocolPolicy: https-only
+          Enabled: true
+  Outputs:
+    URL:
+      Value: !Sub "https://${Distribution.DomainName}"
+    DistributionId:
+      Value: !Ref Distribution
